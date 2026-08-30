@@ -1,0 +1,45 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366F1"/>
+      <stop offset="55%" stop-color="#7C4DE8"/>
+      <stop offset="100%" stop-color="#9333EA"/>
+    </linearGradient>
+    <linearGradient id="sheen" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.28"/>
+      <stop offset="45%" stop-color="#ffffff" stop-opacity="0.04"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.12"/>
+    </linearGradient>
+    <linearGradient id="bar" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B"/>
+      <stop offset="100%" stop-color="#16202F"/>
+    </linearGradient>
+    <filter id="cardShadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="14" stdDeviation="22" flood-color="#1E1B4B" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+
+  <!-- squircle base -->
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#bg)"/>
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#sheen)"/>
+
+  <!-- terminal window card -->
+  <g filter="url(#cardShadow)">
+    <rect x="232" y="308" width="560" height="408" rx="46" fill="#0F172A"/>
+    <!-- title bar -->
+    <path d="M 232 354 a 46 46 0 0 1 46 -46 h 468 a 46 46 0 0 1 46 46 v 46 h -560 z" fill="url(#bar)"/>
+  </g>
+
+  <!-- traffic lights -->
+  <circle cx="286" cy="354" r="15" fill="#FF5F57"/>
+  <circle cx="332" cy="354" r="15" fill="#FEBC2E"/>
+  <circle cx="378" cy="354" r="15" fill="#28C840"/>
+
+  <!-- prompt chevron -->
+  <polyline points="308,462 384,544 308,626"
+            fill="none" stroke="#34D399" stroke-width="38"
+            stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- cursor -->
+  <rect x="440" y="606" width="136" height="32" rx="16" fill="#F1F5F9"/>
+</svg>

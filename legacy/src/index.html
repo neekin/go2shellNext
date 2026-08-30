@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Go2ShellNext Settings</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <div id="app">
+        <h1>Go2ShellNext</h1>
+        <p class="subtitle">Open terminal from Finder</p>
+
+        <section class="setup-guide" id="setup-guide">
+            <div class="setup-icon">⌘</div>
+            <div class="setup-body">
+                <h2>Add to Finder Toolbar</h2>
+                <p>Hold <kbd>⌘</kbd> and drag <strong>Go2ShellNext.app</strong> onto the Finder toolbar</p>
+                <button id="open-app-folder" class="reveal-btn">Reveal Go2ShellNext.app</button>
+            </div>
+        </section>
+
+        <section class="setting-group">
+            <label for="terminal-select">Default Terminal</label>
+            <select id="terminal-select">
+                <option value="Terminal">Terminal.app</option>
+                <option value="iTerm">iTerm2</option>
+                <option value="Warp">Warp</option>
+                <option value="Ghostty">Ghostty</option>
+                <option value="WezTerm">WezTerm</option>
+                <option value="kitty">Kitty</option>
+                <option value="Alacritty">Alacritty</option>
+            </select>
+        </section>
+
+        <section class="setting-group">
+            <label for="custom-command">Custom Command (optional)</label>
+            <input type="text" id="custom-command" placeholder="e.g. vim ." />
+            <p class="hint">Executed after cd-ing to the target directory</p>
+        </section>
+
+        <section class="setting-group">
+            <label class="checkbox-label">
+                <input type="checkbox" id="open-in-tab" />
+                Open in new tab (if supported)
+            </label>
+        </section>
+
+        <button id="save-btn" class="primary-btn">Save Settings</button>
+        <p id="save-status" class="status-text"></p>
+
+        <section class="usage-guide">
+            <h2>Usage</h2>
+            <ul>
+                <li>Click the <strong>Go2ShellNext icon</strong> in Finder toolbar → terminal opens at current folder</li>
+                <li>Open <strong>Go2ShellNext.app</strong> from Spotlight → shows this settings window</li>
+                <li>To remove from toolbar: hold <kbd>⌘</kbd> and drag the icon off</li>
+            </ul>
+        </section>
+    </div>
+
+    <script type="module" src="main.js"></script>
+</body>
+</html>

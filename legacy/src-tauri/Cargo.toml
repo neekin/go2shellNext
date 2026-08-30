@@ -1,0 +1,28 @@
+[package]
+name = "go2shellnext"
+version = "1.0.0"
+edition = "2021"
+
+[profile.release]
+strip = true
+lto = true
+codegen-units = 1
+opt-level = "s"
+panic = "abort"
+
+[lib]
+name = "go2shell_tauri_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-shell = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+core-foundation = "0.10"
+dirs = "6"
+lazy_static = "1"
+fix-path-env = { git = "https://github.com/tauri-apps/fix-path-env-rs", branch = "dev" }

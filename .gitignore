@@ -1,0 +1,8 @@
+.DS_Store
+build/
+.zcode/
+node_modules/
+legacy/src-tauri/target/
+legacy/src/dist/
+extensions/FinderSyncExt.appex/
+*.dmg

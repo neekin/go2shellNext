@@ -1,0 +1,48 @@
+{
+  "$schema": "https://raw.githubusercontent.com/nicegui/tauri-v2/main/tooling/cli/schema.json",
+  "productName": "Go2ShellNext",
+  "version": "1.0.0",
+  "identifier": "com.go2shellnext.app",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../src/dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Go2ShellNext Settings",
+        "width": 480,
+        "height": 400,
+        "resizable": false,
+        "center": true,
+        "visible": false,
+        "decorations": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["dmg", "app"],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "macOS": {
+      "minimumSystemVersion": "12.0",
+      "entitlements": "Entitlements.plist",
+      "exceptionDomain": "",
+      "frameworks": [],
+      "files": {
+        "PlugIns/FinderSyncExt.appex": "../extensions/FinderSyncExt.appex"
+      }
+    }
+  }
+}

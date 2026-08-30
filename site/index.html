@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Go2ShellNext — Open your terminal from the Finder toolbar</title>
+<meta name="description" content="A native Swift rewrite of Go2Shell. Open Terminal, iTerm2, Warp, Ghostty and more at your current Finder folder. ~700 KB, no bundled runtime.">
+<link rel="icon" type="image/png" href="app-icon.png">
+<style>
+  :root {
+    --bg: #0b1020;
+    --bg-soft: #11172c;
+    --card: #151d38;
+    --border: #26304f;
+    --text: #e6eaf5;
+    --muted: #9aa5c3;
+    --accent: #8b7cf8;
+    --accent-2: #4f8ff7;
+    --green: #34d399;
+    --mono: "SF Mono", ui-monospace, Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(139,124,248,.18), transparent 60%),
+      radial-gradient(900px 500px at 10% 10%, rgba(79,143,247,.12), transparent 55%),
+      var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---------- hero ---------- */
+  header { padding: 72px 0 56px; }
+  .hero { display: flex; align-items: center; gap: 48px; flex-wrap: wrap; }
+  .hero-icon {
+    width: 148px; height: 148px; flex: 0 0 auto;
+    border-radius: 32px;
+    box-shadow: 0 24px 60px rgba(139,124,248,.35), 0 4px 16px rgba(0,0,0,.4);
+  }
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--mono); font-size: 13px; color: var(--green);
+    background: rgba(52,211,153,.08); border: 1px solid rgba(52,211,153,.25);
+    padding: 4px 12px; border-radius: 999px; margin-bottom: 18px;
+  }
+  .badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); }
+  h1 {
+    font-size: clamp(40px, 6vw, 60px);
+    font-weight: 800; letter-spacing: -0.03em; line-height: 1.05;
+    background: linear-gradient(100deg, #fff 30%, var(--accent) 75%, var(--accent-2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .tagline { margin-top: 14px; font-size: 19px; color: var(--muted); max-width: 560px; }
+  .tagline code { font-family: var(--mono); font-size: 16px; color: var(--text); background: var(--card); padding: 2px 7px; border-radius: 6px; border: 1px solid var(--border); }
+  .cta { margin-top: 30px; display: flex; gap: 14px; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 9px;
+    padding: 13px 26px; border-radius: 12px;
+    font-weight: 600; font-size: 16px; text-decoration: none;
+    transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+  }
+  .btn-primary {
+    color: #fff;
+    background: linear-gradient(120deg, var(--accent), var(--accent-2));
+    box-shadow: 0 10px 30px rgba(139,124,248,.35);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 38px rgba(139,124,248,.5); }
+  .btn-ghost { color: var(--text); background: var(--card); border: 1px solid var(--border); }
+  .btn-ghost:hover { transform: translateY(-2px); background: var(--bg-soft); }
+
+  /* ---------- terminal mock ---------- */
+  .terminal {
+    flex: 1 1 380px; min-width: 340px;
+    background: #0d1428; border: 1px solid var(--border); border-radius: 14px;
+    box-shadow: 0 30px 80px rgba(0,0,0,.5);
+    overflow: hidden; font-family: var(--mono); font-size: 14px;
+  }
+  .terminal .bar { display: flex; gap: 8px; padding: 12px 14px; background: #131b33; border-bottom: 1px solid var(--border); }
+  .terminal .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .terminal .body { padding: 18px 20px 22px; color: #c6d0ea; }
+  .terminal .p { color: var(--green); }
+  .terminal .dim { color: #67718f; }
+  .cursor { display: inline-block; width: 9px; height: 17px; background: #e6eaf5; vertical-align: text-bottom; animation: blink 1.1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* ---------- sections ---------- */
+  section { padding: 48px 0; }
+  h2 { font-size: 28px; letter-spacing: -0.02em; margin-bottom: 8px; }
+  .sub { color: var(--muted); margin-bottom: 30px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
+  .card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 22px; transition: transform .15s ease, border-color .15s ease;
+  }
+  .card:hover { transform: translateY(-3px); border-color: rgba(139,124,248,.5); }
+  .card .ic { font-size: 24px; }
+  .card h3 { margin: 10px 0 6px; font-size: 17px; }
+  .card p { color: var(--muted); font-size: 14.5px; }
+
+  table { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  th, td { text-align: left; padding: 14px 18px; border-bottom: 1px solid var(--border); font-size: 15px; }
+  tr:last-child td { border-bottom: none; }
+  th { color: var(--muted); font-weight: 600; background: var(--bg-soft); font-size: 13px; text-transform: uppercase; letter-spacing: .06em; }
+  kbd {
+    font-family: var(--mono); font-size: 13px; background: #1d2748;
+    border: 1px solid #33406b; border-bottom-width: 2px;
+    padding: 1px 7px; border-radius: 6px; color: #cbd5f5;
+  }
+
+  .steps { counter-reset: step; display: grid; gap: 14px; }
+  .step {
+    display: flex; gap: 16px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px;
+  }
+  .step::before {
+    counter-increment: step; content: counter(step);
+    flex: 0 0 30px; height: 30px; display: grid; place-items: center;
+    background: linear-gradient(120deg, var(--accent), var(--accent-2));
+    color: #fff; font-weight: 700; border-radius: 9px; font-size: 15px;
+  }
+  .step div { color: var(--muted); }
+  .step b { color: var(--text); }
+  code.inline {
+    font-family: var(--mono); font-size: 13.5px; color: #cbd5f5;
+    background: #0d1428; border: 1px solid var(--border);
+    padding: 2px 8px; border-radius: 6px; word-break: break-all;
+  }
+  .cmd {
+    display: block; font-family: var(--mono); font-size: 14px; color: var(--green);
+    background: #0d1428; border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 16px; margin-top: 8px; overflow-x: auto; white-space: pre;
+  }
+
+  footer { border-top: 1px solid var(--border); margin-top: 40px; padding: 34px 0 48px; color: var(--muted); font-size: 14px; }
+  footer a { color: var(--accent); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="hero">
+      <img class="hero-icon" src="app-icon.png" alt="Go2ShellNext icon" width="148" height="148">
+      <div style="flex:1 1 420px; min-width:320px;">
+        <span class="badge">v1.0.0 · ~700 KB · Native Swift · Apple Silicon</span>
+        <h1>Go2ShellNext</h1>
+        <p class="tagline">Open your terminal from the Finder toolbar — right at <code>the folder you're looking at</code>. A native rewrite of the classic Go2Shell, with no bundled runtime.</p>
+        <div class="cta">
+          <a class="btn btn-primary" href="https://github.com/neekin/go2shellNext/releases/latest/download/Go2ShellNext-1.0.0.app.zip">⬇ Download</a>
+          <a class="btn btn-ghost" href="https://github.com/neekin/go2shellNext">★ GitHub</a>
+        </div>
+      </div>
+      <div class="terminal">
+        <div class="bar">
+          <span class="dot" style="background:#ff5f57"></span>
+          <span class="dot" style="background:#febc2e"></span>
+          <span class="dot" style="background:#28c840"></span>
+        </div>
+        <div class="body">
+          <div><span class="p">➜</span> ~/Projects/go2shellNext <span class="dim">(⌘-click on the Finder toolbar)</span></div>
+          <div><span class="p">➜</span> git status</div>
+          <div class="dim">On branch main — working tree clean</div>
+          <div><span class="p">➜</span> <span class="cursor"></span></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section>
+    <h2>Why you'll like it</h2>
+    <p class="sub">Everything Go2Shell did — rebuilt natively for modern macOS.</p>
+    <div class="grid">
+      <div class="card"><div class="ic">🔗</div><h3>Toolbar button</h3><p>Hold ⌘ and drag the app onto the Finder toolbar. One click opens a terminal at the front window's folder.</p></div>
+      <div class="card"><div class="ic">🖱️</div><h3>Right-click menu</h3><p>Right-click any folder → <i>Open Shell Here</i> lands you exactly there. Settings and Quit live in the same menu.</p></div>
+      <div class="card"><div class="ic">🖥️</div><h3>Your terminal, your rules</h3><p>Terminal.app, iTerm2, Warp, Ghostty, WezTerm, Kitty or Alacritty — pick a default, optionally open in a new tab.</p></div>
+      <div class="card"><div class="ic">⚙️</div><h3>Custom command</h3><p>Chain a command after the <code>cd</code> — jump straight into <i>vim .</i>, activate a venv, run make.</p></div>
+      <div class="card"><div class="ic">🪶</div><h3>700 KB, zero runtime</h3><p>Pure Swift + AppKit/SwiftUI. No Electron, no WebView, no 100 MB downloads. Runs as a tiny background agent.</p></div>
+      <div class="card"><div class="ic">⌥</div><h3>Settings on demand</h3><p>Hold ⌥ while launching to open the settings window — the button stays a one-hit terminal launcher.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>How it works</h2>
+    <p class="sub">Every gesture maps to one predictable action.</p>
+    <table>
+      <tr><th>Action</th><th>Result</th></tr>
+      <tr><td>Click the toolbar button / double-click the app</td><td>Terminal opens at the front Finder window's folder</td></tr>
+      <tr><td>Hold <kbd>⌥</kbd> while launching</td><td>Opens the settings window</td></tr>
+      <tr><td>Right-click a folder → <i>Open Shell Here</i></td><td>Terminal opens at that folder</td></tr>
+      <tr><td>Right-click → <i>Settings…</i> / <i>Quit Go2ShellNext</i></td><td>Settings window / quit the background app</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>Install in 4 steps</h2>
+    <p class="sub">No installer, no daemon — just an app and a Finder extension.</p>
+    <div class="steps">
+      <div class="step"><div><b>Download &amp; move to Applications.</b> Grab the zip from the <a href="https://github.com/neekin/go2shellNext/releases/latest">latest release</a> and drop <b>Go2ShellNext.app</b> into <span class="code inline">/Applications</span>.</div></div>
+      <div class="step"><div><b>Clear the Gatekeeper flag</b> (the app is ad-hoc signed):<span class="cmd">xattr -cr /Applications/Go2ShellNext.app</span></div></div>
+      <div class="step"><div><b>Launch once</b>, then enable the Finder extension:<br><b>System Settings → General → Login Items &amp; Extensions → Extensions → File Providers → Go2ShellNext</b></div></div>
+      <div class="step"><div><b>Add the toolbar button:</b> hold <kbd>⌘</kbd> and drag <b>Go2ShellNext.app</b> from /Applications onto the Finder toolbar. Done — click it anywhere.</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Build it yourself</h2>
+    <p class="sub">One script, standard toolchains — no Node, no Rust.</p>
+    <span class="cmd">git clone https://github.com/neekin/go2shellNext.git
+cd go2shellNext
+./build.sh          # → build/Go2ShellNext.app</span>
+  </section>
+
+  <footer>
+    <p>Go2ShellNext — a native Swift rewrite inspired by <a href="https://github.com/QuentinGib/Go2Shell">Go2Shell</a> by Quentin Gibbs. Made with ⌨️ by <a href="https://github.com/neekin">neekin</a>.</p>
+  </footer>
+
+</div>
+</body>
+</html>

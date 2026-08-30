@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Go2ShellNext — Open your terminal from the Finder toolbar</title>
-<meta name="description" content="A native Swift rewrite of Go2Shell. Open Terminal, iTerm2, Warp, Ghostty and more at your current Finder folder. ~700 KB, no bundled runtime.">
+<title>Go2ShellNext — 从 Finder 工具栏一键打开终端</title>
+<meta name="description" content="经典 Go2Shell 的原生 Swift 重写版。在 Finder 当前文件夹一键打开 Terminal、iTerm2、Warp、Ghostty 等终端,仅约 700 KB,无捆绑运行时。">
 <link rel="icon" type="image/png" href="app-icon.png">
 <style>
   :root {
@@ -27,8 +27,8 @@
       radial-gradient(900px 500px at 10% 10%, rgba(79,143,247,.12), transparent 55%),
       var(--bg);
     color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
-    line-height: 1.6;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "SF Pro Text", "Segoe UI", sans-serif;
+    line-height: 1.7;
     -webkit-font-smoothing: antialiased;
   }
   .wrap { max-width: 1040px; margin: 0 auto; padding: 0 24px; }
@@ -104,7 +104,7 @@
   table { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
   th, td { text-align: left; padding: 14px 18px; border-bottom: 1px solid var(--border); font-size: 15px; }
   tr:last-child td { border-bottom: none; }
-  th { color: var(--muted); font-weight: 600; background: var(--bg-soft); font-size: 13px; text-transform: uppercase; letter-spacing: .06em; }
+  th { color: var(--muted); font-weight: 600; background: var(--bg-soft); font-size: 13px; letter-spacing: .06em; }
   kbd {
     font-family: var(--mono); font-size: 13px; background: #1d2748;
     border: 1px solid #33406b; border-bottom-width: 2px;
@@ -153,14 +153,14 @@
 
   <header>
     <div class="hero">
-      <img class="hero-icon" src="app-icon.png" alt="Go2ShellNext icon" width="148" height="148">
+      <img class="hero-icon" src="app-icon.png" alt="Go2ShellNext 图标" width="148" height="148">
       <div style="flex:1 1 420px; min-width:320px;">
-        <span class="badge">v1.0.1 · ~700 KB · Native Swift · Apple Silicon</span>
+        <span class="badge">v1.0.1 · 约 700 KB · 原生 Swift · Apple Silicon</span>
         <h1>Go2ShellNext</h1>
-        <p class="tagline">Open your terminal from the Finder toolbar — right at <code>the folder you're looking at</code>. A native rewrite of the classic Go2Shell, with no bundled runtime.</p>
+        <p class="tagline">从 Finder 工具栏一键打开终端,直达<code>你正在看的那个文件夹</code>。经典 Go2Shell 的原生重写版,不捆绑任何运行时。</p>
         <div class="cta">
-          <a class="btn btn-primary" href="https://github.com/neekin/go2shellNext/releases/latest/download/Go2ShellNext-1.0.1.app.zip">⬇ Download</a>
-          <a class="btn btn-ghost" href="https://github.com/neekin/go2shellNext">★ GitHub</a>
+          <a class="btn btn-primary" href="https://github.com/neekin/go2shellNext/releases/latest/download/Go2ShellNext-1.0.1.app.zip">⬇ 下载最新版</a>
+          <a class="btn btn-ghost" href="https://github.com/neekin/go2shellNext">★ GitHub 仓库</a>
         </div>
       </div>
       <div class="terminal">
@@ -170,7 +170,7 @@
           <span class="dot" style="background:#28c840"></span>
         </div>
         <div class="body">
-          <div><span class="p">➜</span> ~/Projects/go2shellNext <span class="dim">(⌘-click on the Finder toolbar)</span></div>
+          <div><span class="p">➜</span> ~/Projects/go2shellNext <span class="dim">(点击 Finder 工具栏按钮)</span></div>
           <div><span class="p">➜</span> git status</div>
           <div class="dim">On branch main — working tree clean</div>
           <div><span class="p">➜</span> <span class="cursor"></span></div>
@@ -180,59 +180,59 @@
   </header>
 
   <section>
-    <h2>Why you'll like it</h2>
-    <p class="sub">Everything Go2Shell did — rebuilt natively for modern macOS.</p>
+    <h2>为什么你会喜欢它</h2>
+    <p class="sub">Go2Shell 做过的一切 —— 为现代 macOS 全部原生重写。</p>
     <div class="grid">
-      <div class="card"><div class="ic">🔗</div><h3>Toolbar button</h3><p>Hold ⌘ and drag the app onto the Finder toolbar. One click opens a terminal at the front window's folder.</p></div>
-      <div class="card"><div class="ic">🖱️</div><h3>Right-click menu</h3><p>Right-click any folder → <i>Open Shell Here</i> lands you exactly there. Settings and Quit live in the same menu.</p></div>
-      <div class="card"><div class="ic">🖥️</div><h3>Your terminal, your rules</h3><p>Terminal.app, iTerm2, Warp, Ghostty, WezTerm, Kitty or Alacritty — pick a default, optionally open in a new tab.</p></div>
-      <div class="card"><div class="ic">⚙️</div><h3>Custom command</h3><p>Chain a command after the <code>cd</code> — jump straight into <i>vim .</i>, activate a venv, run make.</p></div>
-      <div class="card"><div class="ic">🪶</div><h3>700 KB, zero runtime</h3><p>Pure Swift + AppKit/SwiftUI. No Electron, no WebView, no 100 MB downloads. Runs as a tiny background agent.</p></div>
-      <div class="card"><div class="ic">⌥</div><h3>Settings on demand</h3><p>Hold ⌥ while launching to open the settings window — the button stays a one-hit terminal launcher.</p></div>
+      <div class="card"><div class="ic">🔗</div><h3>工具栏一键直达</h3><p>按住 ⌘ 把 app 拖到 Finder 工具栏,点一下就在前台窗口所在的文件夹打开终端。</p></div>
+      <div class="card"><div class="ic">🖱️</div><h3>右键菜单</h3><p>右键任意文件夹 → <i>Open Shell Here</i>,精确落到那个目录。设置和退出也在同一个菜单里。</p></div>
+      <div class="card"><div class="ic">🖥️</div><h3>支持你的终端</h3><p>Terminal.app、iTerm2、Warp、Ghostty、WezTerm、Kitty、Alacritty —— 选一个默认项,还支持在已有窗口里开新标签。</p></div>
+      <div class="card"><div class="ic">⚙️</div><h3>自定义命令</h3><p>cd 之后自动接一条命令 —— 直接进 <i>vim .</i>、激活 venv、跑 make,随你定义。</p></div>
+      <div class="card"><div class="ic">🪶</div><h3>700 KB,零运行时</h3><p>纯 Swift + AppKit/SwiftUI。没有 Electron、没有 WebView,常驻后台也轻若鸿毛。</p></div>
+      <div class="card"><div class="ic">⌥</div><h3>设置随叫随到</h3><p>按住 ⌥ 启动即打开设置窗口;工具栏按钮始终保持"一击开终端"的纯粹手感。</p></div>
     </div>
   </section>
 
   <section>
-    <h2>How it works</h2>
-    <p class="sub">Every gesture maps to one predictable action.</p>
+    <h2>行为一览</h2>
+    <p class="sub">每一个手势,都对应一个可预期的动作。</p>
     <table>
-      <tr><th>Action</th><th>Result</th></tr>
-      <tr><td>Click the toolbar button / double-click the app</td><td>Terminal opens at the front Finder window's folder</td></tr>
-      <tr><td>Hold <kbd>⌥</kbd> while launching</td><td>Opens the settings window</td></tr>
-      <tr><td>Right-click a folder → <i>Open Shell Here</i></td><td>Terminal opens at that folder</td></tr>
-      <tr><td><i>Open in new tab</i> setting</td><td>iTerm2: native tab · Terminal.app: simulated <kbd>⌘T</kbd> (needs Accessibility permission, falls back to a new window)</td></tr>
-      <tr><td>Right-click → <i>Settings…</i> / <i>Quit Go2ShellNext</i></td><td>Settings window / quit the background app</td></tr>
+      <tr><th>操作</th><th>结果</th></tr>
+      <tr><td>点击工具栏按钮 / 双击 app</td><td>在 Finder 前窗口所在目录打开终端</td></tr>
+      <tr><td>按住 <kbd>⌥</kbd> 启动</td><td>打开设置窗口</td></tr>
+      <tr><td>右键文件夹 → <i>Open Shell Here</i></td><td>在该文件夹打开终端</td></tr>
+      <tr><td><i>新标签模式</i>设置</td><td>iTerm2:原生标签 · Terminal.app:模拟 <kbd>⌘T</kbd>(需辅助功能权限,失败时自动改为新窗口)</td></tr>
+      <tr><td>右键 → <i>Settings…</i> / <i>Quit Go2ShellNext</i></td><td>打开设置 / 退出后台 app</td></tr>
     </table>
   </section>
 
   <section>
-    <h2>Install in 4 steps</h2>
-    <p class="sub">No installer, no daemon — just an app and a Finder extension.</p>
+    <h2>四步安装</h2>
+    <p class="sub">没有安装器,没有守护进程 —— 一个 app 加一个 Finder 扩展。</p>
     <div class="steps">
-      <div class="step"><div><b>Download &amp; move to Applications.</b> Grab the zip from the <a href="https://github.com/neekin/go2shellNext/releases/latest">latest release</a> and drop <b>Go2ShellNext.app</b> into <span class="code inline">/Applications</span>.</div></div>
-      <div class="step"><div><b>Clear the Gatekeeper flag</b> (the app is ad-hoc signed):<span class="cmd">xattr -cr /Applications/Go2ShellNext.app</span></div></div>
-      <div class="step"><div><b>Launch once</b>, then enable the Finder extension:<br><b>System Settings → General → Login Items &amp; Extensions → Extensions → File Providers → Go2ShellNext</b></div></div>
-      <div class="step"><div><b>Add the toolbar button:</b> hold <kbd>⌘</kbd> and drag <b>Go2ShellNext.app</b> from /Applications onto the Finder toolbar. Done — click it anywhere.</div></div>
+      <div class="step"><div><b>下载并移动到应用程序。</b>从<a href="https://github.com/neekin/go2shellNext/releases/latest">最新 Release</a> 下载 zip,把 <b>Go2ShellNext.app</b> 拖入 <span class="code inline">/Applications</span>。</div></div>
+      <div class="step"><div><b>清除 Gatekeeper 隔离标记</b>(app 为 ad-hoc 签名,首次打开会提示"已损坏"):<span class="cmd">xattr -cr /Applications/Go2ShellNext.app</span></div></div>
+      <div class="step"><div><b>先启动一次</b>,然后启用 Finder 扩展:<br><b>系统设置 → 通用 → 登录项与扩展 → 扩展 → 文件提供程序 → Go2ShellNext</b></div></div>
+      <div class="step"><div><b>添加工具栏按钮:</b>按住 <kbd>⌘</kbd> 把 /Applications 里的 <b>Go2ShellNext.app</b> 拖到 Finder 工具栏。完成 —— 在任何目录点它都好使。</div></div>
     </div>
 
     <div class="warn" id="damaged-fix">
-      <div class="wt">⚠️ First launch says “Go2ShellNext is damaged and can't be opened” / 首次打开提示「已损坏，无法打开」？</div>
-      <p>This is Gatekeeper blocking the ad-hoc signature — the app is fine. Right-click → Open will <b>not</b> help; run this once in Terminal instead / 这是 Gatekeeper 拦截了 ad-hoc 签名，app 本身没问题，右键「打开」也无法绕过，在终端执行一次：</p>
+      <div class="wt">⚠️ 首次打开提示「Go2ShellNext 已损坏,无法打开」?</div>
+      <p>这是 Gatekeeper 拦截了 ad-hoc 签名,app 本身没有问题。右键 → 打开也<b>无法</b>绕过,请在终端执行一次:</p>
       <span class="cmd">xattr -cr /Applications/Go2ShellNext.app</span>
-      <p style="margin-top:8px">After that it opens normally, forever / 之后即可正常打开，无需再操作。</p>
+      <p style="margin-top:8px">之后即可正常打开,无需再操作。</p>
     </div>
   </section>
 
   <section>
-    <h2>Build it yourself</h2>
-    <p class="sub">One script, standard toolchains — no Node, no Rust.</p>
+    <h2>自行构建</h2>
+    <p class="sub">一条脚本搞定,只需要标准工具链 —— 不用 Node,不用 Rust。</p>
     <span class="cmd">git clone https://github.com/neekin/go2shellNext.git
 cd go2shellNext
 ./build.sh          # → build/Go2ShellNext.app</span>
   </section>
 
   <footer>
-    <p>Go2ShellNext — a native Swift rewrite inspired by <a href="https://github.com/QuentinGib/Go2Shell">Go2Shell</a> by Quentin Gibbs. Made with ⌨️ by <a href="https://github.com/neekin">neekin</a>.</p>
+    <p>Go2ShellNext —— 灵感来自 Quentin Gibbs 的 <a href="https://github.com/QuentinGib/Go2Shell">Go2Shell</a> 的原生 Swift 重写版。由 <a href="https://github.com/neekin">neekin</a> 用 ⌨️ 打造。</p>
   </footer>
 
 </div>

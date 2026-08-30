@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Go2ShellNext — 从 Finder 工具栏一键打开终端</title>
+<meta name="description" content="经典 Go2Shell 的原生 Swift 重写版。在 Finder 当前文件夹一键打开 Terminal、iTerm2、Warp、Ghostty 等终端,仅约 700 KB,无捆绑运行时。">
+<link rel="icon" type="image/png" href="app-icon.png">
+<style>
+  :root {
+    --bg: #0b1020;
+    --bg-soft: #11172c;
+    --card: #151d38;
+    --border: #26304f;
+    --text: #e6eaf5;
+    --muted: #9aa5c3;
+    --accent: #8b7cf8;
+    --accent-2: #4f8ff7;
+    --green: #34d399;
+    --mono: "SF Mono", ui-monospace, Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(139,124,248,.18), transparent 60%),
+      radial-gradient(900px 500px at 10% 10%, rgba(79,143,247,.12), transparent 55%),
+      var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "SF Pro Text", "Segoe UI", sans-serif;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---------- hero ---------- */
+  header { padding: 72px 0 56px; }
+  .hero { display: flex; align-items: center; gap: 48px; flex-wrap: wrap; }
+  .hero-icon {
+    width: 148px; height: 148px; flex: 0 0 auto;
+    border-radius: 32px;
+    box-shadow: 0 24px 60px rgba(139,124,248,.35), 0 4px 16px rgba(0,0,0,.4);
+  }
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--mono); font-size: 13px; color: var(--green);
+    background: rgba(52,211,153,.08); border: 1px solid rgba(52,211,153,.25);
+    padding: 4px 12px; border-radius: 999px; margin-bottom: 18px;
+  }
+  .badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); }
+  h1 {
+    font-size: clamp(40px, 6vw, 60px);
+    font-weight: 800; letter-spacing: -0.03em; line-height: 1.05;
+    background: linear-gradient(100deg, #fff 30%, var(--accent) 75%, var(--accent-2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .tagline { margin-top: 14px; font-size: 19px; color: var(--muted); max-width: 560px; }
+  .tagline code { font-family: var(--mono); font-size: 16px; color: var(--text); background: var(--card); padding: 2px 7px; border-radius: 6px; border: 1px solid var(--border); }
+  .cta { margin-top: 30px; display: flex; gap: 14px; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 9px;
+    padding: 13px 26px; border-radius: 12px;
+    font-weight: 600; font-size: 16px; text-decoration: none;
+    transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+  }
+  .btn-primary {
+    color: #fff;
+    background: linear-gradient(120deg, var(--accent), var(--accent-2));
+    box-shadow: 0 10px 30px rgba(139,124,248,.35);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 38px rgba(139,124,248,.5); }
+  .btn-ghost { color: var(--text); background: var(--card); border: 1px solid var(--border); }
+  .btn-ghost:hover { transform: translateY(-2px); background: var(--bg-soft); }
+
+  /* ---------- terminal mock ---------- */
+  .terminal {
+    flex: 1 1 380px; min-width: 340px;
+    background: #0d1428; border: 1px solid var(--border); border-radius: 14px;
+    box-shadow: 0 30px 80px rgba(0,0,0,.5);
+    overflow: hidden; font-family: var(--mono); font-size: 14px;
+  }
+  .terminal .bar { display: flex; gap: 8px; padding: 12px 14px; background: #131b33; border-bottom: 1px solid var(--border); }
+  .terminal .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .terminal .body { padding: 18px 20px 22px; color: #c6d0ea; }
+  .terminal .p { color: var(--green); }
+  .terminal .dim { color: #67718f; }
+  .cursor { display: inline-block; width: 9px; height: 17px; background: #e6eaf5; vertical-align: text-bottom; animation: blink 1.1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* ---------- sections ---------- */
+  section { padding: 48px 0; }
+  h2 { font-size: 28px; letter-spacing: -0.02em; margin-bottom: 8px; }
+  .sub { color: var(--muted); margin-bottom: 30px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
+  .card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 22px; transition: transform .15s ease, border-color .15s ease;
+  }
+  .card:hover { transform: translateY(-3px); border-color: rgba(139,124,248,.5); }
+  .card .ic { font-size: 24px; }
+  .card h3 { margin: 10px 0 6px; font-size: 17px; }
+  .card p { color: var(--muted); font-size: 14.5px; }
+
+  table { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  th, td { text-align: left; padding: 14px 18px; border-bottom: 1px solid var(--border); font-size: 15px; }
+  tr:last-child td { border-bottom: none; }
+  th { color: var(--muted); font-weight: 600; background: var(--bg-soft); font-size: 13px; letter-spacing: .06em; }
+  kbd {
+    font-family: var(--mono); font-size: 13px; background: #1d2748;
+    border: 1px solid #33406b; border-bottom-width: 2px;
+    padding: 1px 7px; border-radius: 6px; color: #cbd5f5;
+  }
+
+  .steps { counter-reset: step; display: grid; gap: 14px; }
+  .step {
+    display: flex; gap: 16px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px;
+  }
+  .step::before {
+    counter-increment: step; content: counter(step);
+    flex: 0 0 30px; height: 30px; display: grid; place-items: center;
+    background: linear-gradient(120deg, var(--accent), var(--accent-2));
+    color: #fff; font-weight: 700; border-radius: 9px; font-size: 15px;
+  }
+  .step div { color: var(--muted); }
+  .step b { color: var(--text); }
+  code.inline {
+    font-family: var(--mono); font-size: 13.5px; color: #cbd5f5;
+    background: #0d1428; border: 1px solid var(--border);
+    padding: 2px 8px; border-radius: 6px; word-break: break-all;
+  }
+  .cmd {
+    display: block; font-family: var(--mono); font-size: 14px; color: var(--green);
+    background: #0d1428; border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 16px; margin-top: 8px; overflow-x: auto; white-space: pre;
+  }
+  .warn {
+    background: rgba(251,191,36,.07);
+    border: 1px solid rgba(251,191,36,.4);
+    border-radius: 14px; padding: 18px 20px; margin-top: 22px;
+  }
+  .warn .wt { color: #fbbf24; font-weight: 700; margin-bottom: 6px; }
+  .warn p { color: var(--muted); font-size: 14.5px; }
+
+  footer { border-top: 1px solid var(--border); margin-top: 40px; padding: 34px 0 48px; color: var(--muted); font-size: 14px; }
+  footer a { color: var(--accent); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="hero">
+      <img class="hero-icon" src="app-icon.png" alt="Go2ShellNext 图标" width="148" height="148">
+      <div style="flex:1 1 420px; min-width:320px;">
+        <span class="badge">v1.0.1 · 约 700 KB · 原生 Swift · Apple Silicon</span>
+        <h1>Go2ShellNext</h1>
+        <p class="tagline">从 Finder 工具栏一键打开终端,直达<code>你正在看的那个文件夹</code>。经典 Go2Shell 的原生重写版,不捆绑任何运行时。</p>
+        <div class="cta">
+          <a class="btn btn-primary" href="https://github.com/neekin/go2shellNext/releases/latest/download/Go2ShellNext-1.0.1.app.zip">⬇ 下载最新版</a>
+          <a class="btn btn-ghost" href="https://github.com/neekin/go2shellNext">★ GitHub 仓库</a>
+        </div>
+      </div>
+      <div class="terminal">
+        <div class="bar">
+          <span class="dot" style="background:#ff5f57"></span>
+          <span class="dot" style="background:#febc2e"></span>
+          <span class="dot" style="background:#28c840"></span>
+        </div>
+        <div class="body">
+          <div><span class="p">➜</span> ~/Projects/go2shellNext <span class="dim">(点击 Finder 工具栏按钮)</span></div>
+          <div><span class="p">➜</span> git status</div>
+          <div class="dim">On branch main — working tree clean</div>
+          <div><span class="p">➜</span> <span class="cursor"></span></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section>
+    <h2>为什么你会喜欢它</h2>
+    <p class="sub">Go2Shell 做过的一切 —— 为现代 macOS 全部原生重写。</p>
+    <div class="grid">
+      <div class="card"><div class="ic">🔗</div><h3>工具栏一键直达</h3><p>按住 ⌘ 把 app 拖到 Finder 工具栏,点一下就在前台窗口所在的文件夹打开终端。</p></div>
+      <div class="card"><div class="ic">🖱️</div><h3>右键菜单</h3><p>右键任意文件夹 → <i>Open Shell Here</i>,精确落到那个目录。设置和退出也在同一个菜单里。</p></div>
+      <div class="card"><div class="ic">🖥️</div><h3>支持你的终端</h3><p>Terminal.app、iTerm2、Warp、Ghostty、WezTerm、Kitty、Alacritty —— 选一个默认项,还支持在已有窗口里开新标签。</p></div>
+      <div class="card"><div class="ic">⚙️</div><h3>自定义命令</h3><p>cd 之后自动接一条命令 —— 直接进 <i>vim .</i>、激活 venv、跑 make,随你定义。</p></div>
+      <div class="card"><div class="ic">🪶</div><h3>700 KB,零运行时</h3><p>纯 Swift + AppKit/SwiftUI。没有 Electron、没有 WebView,常驻后台也轻若鸿毛。</p></div>
+      <div class="card"><div class="ic">⌥</div><h3>设置随叫随到</h3><p>按住 ⌥ 启动即打开设置窗口;工具栏按钮始终保持"一击开终端"的纯粹手感。</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>行为一览</h2>
+    <p class="sub">每一个手势,都对应一个可预期的动作。</p>
+    <table>
+      <tr><th>操作</th><th>结果</th></tr>
+      <tr><td>点击工具栏按钮 / 双击 app</td><td>在 Finder 前窗口所在目录打开终端</td></tr>
+      <tr><td>按住 <kbd>⌥</kbd> 启动</td><td>打开设置窗口</td></tr>
+      <tr><td>右键文件夹 → <i>Open Shell Here</i></td><td>在该文件夹打开终端</td></tr>
+      <tr><td><i>新标签模式</i>设置</td><td>iTerm2:原生标签 · Terminal.app:模拟 <kbd>⌘T</kbd>(需辅助功能权限,失败时自动改为新窗口)</td></tr>
+      <tr><td>右键 → <i>Settings…</i> / <i>Quit Go2ShellNext</i></td><td>打开设置 / 退出后台 app</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>四步安装</h2>
+    <p class="sub">没有安装器,没有守护进程 —— 一个 app 加一个 Finder 扩展。</p>
+    <div class="steps">
+      <div class="step"><div><b>下载并移动到应用程序。</b>从<a href="https://github.com/neekin/go2shellNext/releases/latest">最新 Release</a> 下载 zip,把 <b>Go2ShellNext.app</b> 拖入 <span class="code inline">/Applications</span>。</div></div>
+      <div class="step"><div><b>清除 Gatekeeper 隔离标记</b>(app 为 ad-hoc 签名,首次打开会提示"已损坏"):<span class="cmd">xattr -cr /Applications/Go2ShellNext.app</span></div></div>
+      <div class="step"><div><b>先启动一次</b>,然后启用 Finder 扩展:<br><b>系统设置 → 通用 → 登录项与扩展 → 扩展 → 文件提供程序 → Go2ShellNext</b></div></div>
+      <div class="step"><div><b>添加工具栏按钮:</b>按住 <kbd>⌘</kbd> 把 /Applications 里的 <b>Go2ShellNext.app</b> 拖到 Finder 工具栏。完成 —— 在任何目录点它都好使。</div></div>
+    </div>
+
+    <div class="warn" id="damaged-fix">
+      <div class="wt">⚠️ 首次打开提示「Go2ShellNext 已损坏,无法打开」?</div>
+      <p>这是 Gatekeeper 拦截了 ad-hoc 签名,app 本身没有问题。右键 → 打开也<b>无法</b>绕过,请在终端执行一次:</p>
+      <span class="cmd">xattr -cr /Applications/Go2ShellNext.app</span>
+      <p style="margin-top:8px">之后即可正常打开,无需再操作。</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>自行构建</h2>
+    <p class="sub">一条脚本搞定,只需要标准工具链 —— 不用 Node,不用 Rust。</p>
+    <span class="cmd">git clone https://github.com/neekin/go2shellNext.git
+cd go2shellNext
+./build.sh          # → build/Go2ShellNext.app</span>
+  </section>
+
+  <footer>
+    <p>Go2ShellNext —— 灵感来自 Quentin Gibbs 的 <a href="https://github.com/QuentinGib/Go2Shell">Go2Shell</a> 的原生 Swift 重写版。由 <a href="https://github.com/neekin">neekin</a> 用 ⌨️ 打造。</p>
+  </footer>
+
+</div>
+</body>
+</html>

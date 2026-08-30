@@ -134,6 +134,13 @@
     background: #0d1428; border: 1px solid var(--border); border-radius: 10px;
     padding: 12px 16px; margin-top: 8px; overflow-x: auto; white-space: pre;
   }
+  .warn {
+    background: rgba(251,191,36,.07);
+    border: 1px solid rgba(251,191,36,.4);
+    border-radius: 14px; padding: 18px 20px; margin-top: 22px;
+  }
+  .warn .wt { color: #fbbf24; font-weight: 700; margin-bottom: 6px; }
+  .warn p { color: var(--muted); font-size: 14.5px; }
 
   footer { border-top: 1px solid var(--border); margin-top: 40px; padding: 34px 0 48px; color: var(--muted); font-size: 14px; }
   footer a { color: var(--accent); text-decoration: none; }
@@ -206,6 +213,13 @@
       <div class="step"><div><b>Clear the Gatekeeper flag</b> (the app is ad-hoc signed):<span class="cmd">xattr -cr /Applications/Go2ShellNext.app</span></div></div>
       <div class="step"><div><b>Launch once</b>, then enable the Finder extension:<br><b>System Settings → General → Login Items &amp; Extensions → Extensions → File Providers → Go2ShellNext</b></div></div>
       <div class="step"><div><b>Add the toolbar button:</b> hold <kbd>⌘</kbd> and drag <b>Go2ShellNext.app</b> from /Applications onto the Finder toolbar. Done — click it anywhere.</div></div>
+    </div>
+
+    <div class="warn" id="damaged-fix">
+      <div class="wt">⚠️ First launch says “Go2ShellNext is damaged and can't be opened” / 首次打开提示「已损坏，无法打开」？</div>
+      <p>This is Gatekeeper blocking the ad-hoc signature — the app is fine. Right-click → Open will <b>not</b> help; run this once in Terminal instead / 这是 Gatekeeper 拦截了 ad-hoc 签名，app 本身没问题，右键「打开」也无法绕过，在终端执行一次：</p>
+      <span class="cmd">xattr -cr /Applications/Go2ShellNext.app</span>
+      <p style="margin-top:8px">After that it opens normally, forever / 之后即可正常打开，无需再操作。</p>
     </div>
   </section>
 

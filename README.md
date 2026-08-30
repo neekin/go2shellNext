@@ -30,7 +30,7 @@ Go2ShellNext is a native Swift rewrite of the classic [Go2Shell](https://github.
 ## Install
 
 1. Download `Go2ShellNext.app.zip` from the [latest release](https://github.com/neekin/go2shellNext/releases/latest), unzip and move the app to `/Applications`.
-2. The app is ad-hoc signed, so remove the Gatekeeper quarantine first:
+2. The app is ad-hoc signed, so on first launch macOS may say *"Go2ShellNext is damaged and can't be opened"*. Right-click → Open does **not** bypass this; clear the quarantine flag once instead:
 
    ```bash
    xattr -cr /Applications/Go2ShellNext.app

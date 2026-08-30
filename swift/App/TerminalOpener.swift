@@ -69,6 +69,9 @@ enum TerminalOpener {
 
         let script: String
         if openInTab {
+            // ⌘T needs Accessibility permission and only lands if Terminal has
+            // finished activating, so verify the tab actually opened and fall
+            // back to a new window otherwise.
             script = """
             tell application "Finder"
             set finderPath to POSIX path of (target of front window as alias)
@@ -76,7 +79,22 @@ enum TerminalOpener {
             tell application "Terminal"
             activate
             if (count of windows) > 0 then
+            set beforeTabs to count of tabs of front window
+            else
+            set beforeTabs to -1
+            end if
+            end tell
+            delay 0.25
+            set tabOK to false
+            try
             tell application "System Events" to keystroke "t" using command down
+            delay 0.35
+            tell application "Terminal"
+            if beforeTabs >= 0 and (count of windows) > 0 and (count of tabs of front window) > beforeTabs then set tabOK to true
+            end tell
+            end try
+            tell application "Terminal"
+            if tabOK then
             do script "cd " & quoted form of finderPath & "\(cmdSuffix)" in front window
             else
             do script "cd " & quoted form of finderPath & "\(cmdSuffix)"

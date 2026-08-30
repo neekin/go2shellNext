@@ -39,6 +39,9 @@ struct SettingsView: View {
                     }
 
                     Toggle("Open in new tab (if supported)", isOn: $openInTab)
+                    Text("New tabs in Terminal.app need Accessibility permission (System Settings → Privacy & Security → Accessibility → Go2ShellNext); without it a new window opens instead.")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
 
                     HStack {
                         Button("Save Settings") { save() }

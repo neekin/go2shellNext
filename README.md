@@ -25,6 +25,8 @@ Go2ShellNext is a native Swift rewrite of the classic [Go2Shell](https://github.
 | Right-click in Finder → *Settings…* | Opens the settings window |
 | Right-click in Finder → *Quit Go2ShellNext* | Quits the background app |
 
+> **Open in new tab (setting):** works natively with iTerm2. For Terminal.app the tab is created via a simulated <kbd>⌘T</kbd>, which needs *Accessibility* permission for Go2ShellNext (System Settings → Privacy & Security → Accessibility). Without it — or if the keystroke misses — the app automatically falls back to opening a new window, so you always get a terminal.
+
 ## Install
 
 1. Download `Go2ShellNext.app.zip` from the [latest release](https://github.com/neekin/go2shellNext/releases/latest), unzip and move the app to `/Applications`.

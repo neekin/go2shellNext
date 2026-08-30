@@ -62,7 +62,10 @@ enum TerminalOpener {
     }
 
     private static func openTerminalAppAtFinder(customCommand: String, openInTab: Bool) {
-        let cmdSuffix = customCommand.isEmpty ? "" : " && \(customCommand)"
+        // The suffix must land INSIDE the AppleScript string literal, otherwise
+        // the generated script is a syntax error.
+        let cmd = normalizedCustomCommand(customCommand)
+        let cmdSuffix = cmd.isEmpty ? "" : " && \(cmd)"
 
         let script: String
         if openInTab {
@@ -74,9 +77,9 @@ enum TerminalOpener {
             activate
             if (count of windows) > 0 then
             tell application "System Events" to keystroke "t" using command down
-            do script "cd " & quoted form of finderPath\(cmdSuffix) in front window
+            do script "cd " & quoted form of finderPath & "\(cmdSuffix)" in front window
             else
-            do script "cd " & quoted form of finderPath\(cmdSuffix)
+            do script "cd " & quoted form of finderPath & "\(cmdSuffix)"
             end if
             end tell
             """
@@ -87,11 +90,24 @@ enum TerminalOpener {
             end tell
             tell application "Terminal"
             activate
-            do script "cd " & quoted form of finderPath\(cmdSuffix) & ""
+            do script "cd " & quoted form of finderPath & "\(cmdSuffix)" & ""
             end tell
             """
         }
         runOsaScript(script)
+    }
+
+    /// Users often paste leading/trailing separators like `;clear;`; normalize
+    /// them away so the `cd && cmd` join stays valid shell.
+    private static func normalizedCustomCommand(_ command: String) -> String {
+        var cmd = command.trimmingCharacters(in: .whitespacesAndNewlines)
+        while cmd.hasPrefix(";") || cmd.hasPrefix("&") {
+            cmd = String(cmd.dropFirst()).trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+        while cmd.hasSuffix(";") || cmd.hasSuffix("&") {
+            cmd = String(cmd.dropLast()).trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+        return cmd
     }
 
     private static func openIterm2AtFinder(customCommand: String, openInTab: Bool) {
@@ -160,14 +176,36 @@ enum TerminalOpener {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/osascript")
         process.arguments = ["-e", script]
-        try? process.run()
+        let stderrPipe = Pipe()
+        process.standardError = stderrPipe
+        do {
+            try process.run()
+            process.waitUntilExit()
+            let stderr = String(data: stderrPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
+            logDebug("osascript exit=\(process.terminationStatus) stderr=\(stderr.isEmpty ? "-" : stderr.trimmingCharacters(in: .whitespacesAndNewlines))")
+        } catch {
+            logDebug("osascript spawn failed: \(error.localizedDescription)")
+        }
+    }
+
+    private static func logDebug(_ message: String) {
+        let url = SettingsStore.fileURL.deletingLastPathComponent()
+            .appendingPathComponent("launch_debug.log")
+        let line = "\(Date().timeIntervalSince1970): \(message)\n"
+        if let handle = try? FileHandle(forWritingTo: url) {
+            _ = try? handle.seekToEnd()
+            try? handle.write(contentsOf: Data(line.utf8))
+        } else {
+            try? line.write(to: url, atomically: true, encoding: .utf8)
+        }
     }
 
     private static func cdCommand(_ escapedPath: String, _ customCommand: String) -> String {
-        if customCommand.isEmpty {
+        let cmd = normalizedCustomCommand(customCommand)
+        if cmd.isEmpty {
             return "cd \(escapedPath)"
         }
-        return "cd \(escapedPath) && \(customCommand)"
+        return "cd \(escapedPath) && \(cmd)"
     }
 
     private static func openTerminalApp(escapedPath: String, customCommand: String, openInTab: Bool) {
